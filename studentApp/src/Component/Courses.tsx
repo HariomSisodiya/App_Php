@@ -19,11 +19,10 @@ export default function Courses() {
     useEffect(() => {
         // Simulate fetching data from the JSON file
         setData(videosData.videos);
-        console.log("heollo");
     }, []);
 
     return (
-        <div className="course-index">
+        <div className="w-75 me-3">
             <h1 className="text-center">Learning Videos</h1>
             {data.length > 0 ? (
                 <div className="row mt-5">

@@ -21,20 +21,33 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'actions' => ['index', 'logout', 'about', 'contact'],
+                        'roles' => ['@'], // Authenticated users
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['login', 'signup', 'count', 'student'],
+                        'roles' => ['?'], // Guest users
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
+            'corsFilter' => [
+                'class' => \yii\filters\Cors::class,
+                'cors' => [
+                    'Origin' => ['http://localhost:5173'],
+                    'Access-Control-Request-Method' => ['*'],
+                    'Access-Control-Request-Headers' => ['*'],
+                    'Access-Control-Allow-Credentials' => true,
                 ],
+            ],
+            'contentNegotiator' => [
+                'class' => \yii\filters\ContentNegotiator::class,
+                // 'formats' => [
+                //     'application/json' => Response::FORMAT_JSON,
+                // ],
             ],
         ];
     }
@@ -61,10 +74,35 @@ class SiteController extends Controller
      * @return string
      */
     public function actionIndex()
+{
+    $student = Yii::$app->user->identity;
+    $student_id = $student ? $student->id : null;
+    $auth_token = Yii::$app->session->get('jwt_token');
+
+    return $this->render('index', [
+        'student_id' => $student_id,
+        'auth_token' => $auth_token,
+    ]);
+}
+
+
+    public function actionCount()
     {
-        return $this->render('index');
+        $studentCount = Student::find()->count();
+
+        return $studentCount;
     }
 
+    public function actionStudent($id)
+    {
+
+        $student = Student::findOne($id);
+
+        if ($student == null) {
+            return $this->asJson(['error' => 'Student not found']);
+        }
+        return $this->asJson(['student' => $student]);
+    }
 
     public function actionSignup()
     {
@@ -78,7 +116,8 @@ class SiteController extends Controller
         return $this->render('signup', ['student' => $student]);
     }
 
-    public function actionReact(){
+    public function actionReact()
+    {
         return $this->renderPartial('@app/web/react/index.html');
     }
 
@@ -98,10 +137,8 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             $student = Yii::$app->user->identity;
             $token = $student->generateJwtToken();
-
             Yii::$app->session->set('jwt_token', $token);
-
-
+            
             Yii::$app->getSession()->setFlash('success', 'Student logged in successfully.');
             return $this->goBack();
         } else {

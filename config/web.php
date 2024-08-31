@@ -22,6 +22,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\student',
             'enableAutoLogin' => true,
+            'loginUrl' => ['site/login'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -46,6 +47,10 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'SignUp' => 'site/signup',
+                'Login' => 'site/login',
+                'GET count' => 'site/count',
+                'GET student/<id:\d+>' => 'site/student',
                 // Define React Route
                 'react/<path:.*>' => 'site/react',
             ],

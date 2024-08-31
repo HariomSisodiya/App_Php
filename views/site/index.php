@@ -1,8 +1,9 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-?>
 
+
+?>
 <div class="site-index">
     <div class="container-fluid ">
         <div class="row no-gutters">
@@ -13,12 +14,12 @@ use yii\widgets\ActiveForm;
                             <h6 style="color: #4db6ac; margin-bottom: 20px;">KNOWLEDGEPULSE</h6>
                             <h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 20px;">Knowledge Meets<br>Innovation</h1>
                             <p style="color: #b2dfdb; margin-bottom: 30px;">This platform's simplicity belies its powerful capabilities, offering<br>a seamless and enjoyable educational experience.</p>
-                            
                             <?php $form = ActiveForm::begin(['options' => ['class' => 'form-inline']]); ?>
-                                <div class="input-group" style="width: 100%;">
-                                    <?= Html::a('Get Courses' , ['/react'] , ['class' => 'btn btn-warning p-2'] ) ?>
-                                </div>
+                            <div class="input-group" style="width: 100%;">
+                                <?= Html::a('Get Courses' , ['/react' , 'student_id' => $student_id , 'auth_token' => $auth_token] , ['class' => 'btn btn-warning p-2'] ) ?>
+                            </div>
                             <?php ActiveForm::end(); ?>
+
                         </div>
                         <div class="col-md-5 position-relative">
                             <?= Html::img('@web/image/student3.avif', ['class' => 'img-fluid', 'alt' => 'Student image', 'style' => 'border-radius: 10px; object-fit: cover;']) ?>

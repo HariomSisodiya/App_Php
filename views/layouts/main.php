@@ -67,35 +67,46 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <body class="d-flex flex-column h-100">
     <?php $this->beginBody() ?>
 
-    <header id="header">
-        <?php
-        NavBar::begin([
-            'brandLabel' => 'Knowledge+',
-            'brandUrl' => Yii::$app->homeUrl,
-            'options' => ['class' => 'navbar-expand-md navbar-dark navbar-custom fixed-top'] // Apply custom class here
-        ]);
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav d-flex align-items-end'],
-            'items' => [
-                ['label' => 'Home', 'url' => ['/site/index'] ],
+    <?php if (!Yii::$app->user->isGuest): ?>
+        <!-- Navbar appears only if the user is logged in -->
+        <header id="header">
+            <?php
+            NavBar::begin([
+                'brandLabel' => 'Knowledge+',
+                'brandUrl' => Yii::$app->homeUrl,
+                'options' => ['class' => 'navbar-expand-md navbar-dark navbar-custom fixed-top'] // Apply custom class here
+            ]);
+
+            $navItems = [
+                ['label' => 'Home', 'url' => ['/site/index']],
                 ['label' => 'About', 'url' => ['/site/about']],
                 ['label' => 'Contact', 'url' => ['/site/contact']],
-                ['label' => 'Signup', 'url' => ['/site/signup']],
-                Yii::$app->user->isGuest
-                ? ['label' => 'Login', 'url' => ['/site/login']]
-                : '<li class="nav-item">'
-                . Html::beginForm(['/site/logout'])
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->email . ')',
-                    ['class' => 'nav-link btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            ]
-        ]);
-        NavBar::end();
-        ?>
-    </header>
+            ];
+
+            if (Yii::$app->user->isGuest) {
+                $navItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
+                $navItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+            } else {
+                $navItems[] = [
+                    'label' => 'Logout',
+                    'url' => ['/site/logout'],
+                    'linkOptions' => [
+                        'class' => 'nav-link btn btn-link logout',
+                        'data-method' => 'post',
+                        'data-confirm' => 'Are you sure you want to logout?'
+                    ]
+                ];
+            }
+
+            echo Nav::widget([
+                'options' => ['class' => 'navbar-nav d-flex align-items-end'],
+                'items' => $navItems,
+            ]);
+
+            NavBar::end();
+            ?>
+        </header>
+    <?php endif; ?>
 
     <main id="main" class="flex-shrink-0" role="main">
         <div class="container">
